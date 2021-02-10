@@ -24,23 +24,31 @@
     <title>Работа мечты</title>
 </head>
 <body>
-<div class="container">
+<div class="container pt-3">
+
     <div class="row">
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">Объявления</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% for (Post post : Store.instOf().findAllPosts()) { %>
-            <tr>
-                <td><%= post.getName() %>
-                </td>
-            </tr>
-            <% } %>
-            </tbody>
-        </table>
+        <div class="card" style="width: 100%">
+            <div class="card-header">
+                Вакансии
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Названия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% for (Post post : Store.instOf().findAllPosts()) { %>
+                    <tr>
+                        <td><%= post.getName() %>
+                        </td>
+                    </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 </body>
