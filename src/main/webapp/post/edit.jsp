@@ -21,7 +21,6 @@
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
 
-<%--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">--%>
     <title>Работа мечты</title>
 </head>
 <body>
@@ -29,7 +28,7 @@
     String id = request.getParameter("id");
     Post post = new Post(0, "");
     if (id != null) {
-        post = Store.instOf().findById(Integer.valueOf(id));
+        post = Store.instOf().findByIdPost(Integer.valueOf(id));
     }
 %>
 <div class="container pt-3">
