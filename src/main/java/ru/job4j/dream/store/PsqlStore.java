@@ -163,7 +163,7 @@ public class PsqlStore implements Store {
 
 
     @Override
-    public Post findById(int id) {
+    public Post findByIdPost(int id) {
         Post post = null;
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement("SELECT * FROM post WHERE id = (?)")
@@ -179,5 +179,24 @@ public class PsqlStore implements Store {
             throwables.printStackTrace();
         }
         return post;
+    }
+
+    @Override
+    public Candidate findByIdCandidate(int id) {
+        Candidate candidate = null;
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement("SELECT * FROM candidate WHERE id = (?)")
+        ) {
+            ps.setInt(1, id);
+            try (ResultSet it = ps.executeQuery()) {
+                while (it.next()) {
+                    String name = it.getString(2);
+                    candidate = new Candidate(id, name);
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return candidate;
     }
 }
