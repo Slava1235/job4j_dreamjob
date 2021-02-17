@@ -170,7 +170,7 @@ public class PsqlStore implements Store {
         ) {
             ps.setInt(1, id);
             try (ResultSet it = ps.executeQuery()) {
-                while (it.next()) {
+               if (it.next()) {
                     String name = it.getString(2);
                     post = new Post(id, name);
                 }
@@ -189,7 +189,7 @@ public class PsqlStore implements Store {
         ) {
             ps.setInt(1, id);
             try (ResultSet it = ps.executeQuery()) {
-                while (it.next()) {
+                if (it.next()) {
                     String name = it.getString(2);
                     candidate = new Candidate(id, name);
                 }
