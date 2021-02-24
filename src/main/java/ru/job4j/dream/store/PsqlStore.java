@@ -2,6 +2,7 @@ package ru.job4j.dream.store;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import ru.job4j.dream.model.Candidate;
+import ru.job4j.dream.model.Photo;
 import ru.job4j.dream.model.Post;
 
 import java.io.BufferedReader;
@@ -76,13 +77,30 @@ public class PsqlStore implements Store {
         ) {
             try (ResultSet it = ps.executeQuery()) {
                 while (it.next()) {
-                    candidates.add(new Candidate(it.getInt("id"), it.getString("name")));
+                    candidates.add(new Candidate(it.getInt("id"), it.getString("name"), it.getString("photoId")));
                 }
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return candidates;
+    }
+
+    @Override
+    public Collection<Photo> findAllPhoto() {
+        List<Photo> photo = new ArrayList<>();
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement("SELECT * FROM photo")
+        ) {
+            try (ResultSet it = ps.executeQuery()) {
+                while (it.next()) {
+                    photo.add(new Photo(it.getInt("id"), it.getString("photoId")));
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return photo;
     }
 
     @Override
@@ -103,6 +121,33 @@ public class PsqlStore implements Store {
         }
     }
 
+    @Override
+    public void save(Photo photo) {
+        if (photo.getId() == 0) {
+            create(photo);
+        } else {
+           update(photo);
+        }
+    }
+
+    private void create(Photo photo) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement("INSERT INTO photo(name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
+        ) {
+            ps.setString(1, photo.getName());
+            ps.execute();
+            try (ResultSet id = ps.getGeneratedKeys()) {
+                if (id.next()) {
+                    photo.setId(id.getInt(1));
+                }
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+
     private Post create(Post post) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement("INSERT INTO post(name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
@@ -122,9 +167,10 @@ public class PsqlStore implements Store {
 
     private Candidate create(Candidate candidate) {
         try (Connection cn = pool.getConnection();
-             PreparedStatement ps = cn.prepareStatement("INSERT INTO candidate(name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
+             PreparedStatement ps = cn.prepareStatement("INSERT INTO candidate(name , photoid) VALUES (?, ?) ", PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
             ps.setString(1, candidate.getName());
+           ps.setString(2, candidate.getPhotoId());
             ps.execute();
             try (ResultSet id = ps.getGeneratedKeys()) {
                 if (id.next()) {
@@ -132,7 +178,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            logger.info("Error");
+          e.printStackTrace();
         }
         return candidate;
     }
@@ -161,6 +207,18 @@ public class PsqlStore implements Store {
         }
     }
 
+    public void update(Photo photo) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement("update photo set name = (?) where id =(?)")
+        ) {
+            ps.setString(1, photo.getName());
+            ps.setInt(2, photo.getId());
+            ps.execute();
+        } catch (Exception e) {
+            logger.info("Error");
+        }
+    }
+
 
     @Override
     public Post findByIdPost(int id) {
@@ -170,7 +228,7 @@ public class PsqlStore implements Store {
         ) {
             ps.setInt(1, id);
             try (ResultSet it = ps.executeQuery()) {
-               if (it.next()) {
+                if (it.next()) {
                     String name = it.getString(2);
                     post = new Post(id, name);
                 }
@@ -185,13 +243,20 @@ public class PsqlStore implements Store {
     public Candidate findByIdCandidate(int id) {
         Candidate candidate = null;
         try (Connection cn = pool.getConnection();
-             PreparedStatement ps = cn.prepareStatement("SELECT * FROM candidate WHERE id = (?)")
+             PreparedStatement ps = cn.prepareStatement("SELECT * FROM candidate WHERE id = (?)");
+             PreparedStatement psPhoto = cn.prepareStatement("SELECT * FROM photo WHERE id = (?)")
         ) {
             ps.setInt(1, id);
+            psPhoto.setInt(1, id);
             try (ResultSet it = ps.executeQuery()) {
-                if (it.next()) {
-                    String name = it.getString(2);
-                    candidate = new Candidate(id, name);
+                try (ResultSet itPhoto = psPhoto.executeQuery()) {
+                    if (itPhoto.next()) {
+                        if (it.next()) {
+                            String name = it.getString(2);
+                            String photo = itPhoto.getString(1);
+                            candidate = new Candidate(id, name, photo);
+                        }
+                    }
                 }
             }
         } catch (SQLException throwables) {
@@ -199,4 +264,24 @@ public class PsqlStore implements Store {
         }
         return candidate;
     }
+
+    @Override
+    public Photo findByIdPhoto(int id) {
+        Photo photo = null;
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement("SELECT * FROM photo WHERE id = (?)")
+        ) {
+            ps.setInt(1, id);
+            try (ResultSet it = ps.executeQuery()) {
+                if (it.next()) {
+                    String name = it.getString(2);
+                    photo = new Photo(id, name);
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return photo;
+    }
+
 }

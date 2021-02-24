@@ -63,6 +63,10 @@
                                     <i class ="fa fa-edit mr-3"></i>
                                 </a>
                                 <c:out value="${candidate.name}"/>
+                                <a href='<c:url value="/candidate/edit.jsp?id=${candidate.photoId}"/>'>
+                                    <i class ="fa fa-edit mr-3"></i>
+                                </a>
+                                <c:out value="${candidate.photoId}"/>
                             </td>
                         </tr>
                     </c:forEach>

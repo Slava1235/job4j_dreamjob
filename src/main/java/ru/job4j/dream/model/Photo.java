@@ -2,26 +2,17 @@ package ru.job4j.dream.model;
 
 import java.util.Objects;
 
-public class Candidate {
-    private int id;
-    private String name;
-    private String photoId;
+public class Photo {
 
-    public Candidate(int id, String name, String photoId) {
+    private static int id;
+    private String name;
+
+    public Photo(int id, String name) {
         this.id = id;
         this.name = name;
-        this.photoId = photoId;
     }
 
-    public String getPhotoId() {
-        return photoId;
-    }
-
-    public void setPhotoId(String photoId) {
-        this.photoId = photoId;
-    }
-
-    public int getId() {
+    public static int getId() {
         return id;
     }
 
@@ -41,9 +32,8 @@ public class Candidate {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Candidate candidate = (Candidate) o;
-        return id == candidate.id &&
-                Objects.equals(name, candidate.name);
+        Photo photo = (Photo) o;
+        return id == photo.id && Objects.equals(name, photo.name);
     }
 
     @Override
@@ -53,7 +43,7 @@ public class Candidate {
 
     @Override
     public String toString() {
-        return "Candidate{" +
+        return "Photo{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
