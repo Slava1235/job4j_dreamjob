@@ -5,6 +5,9 @@ import ru.job4j.dream.model.Candidate;
 import ru.job4j.dream.model.Photo;
 import ru.job4j.dream.model.Post;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.sql.Connection;
@@ -15,10 +18,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
+
 
 public class PsqlStore implements Store {
-    private static final Logger logger = Logger.getLogger(PsqlStore.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(PsqlStore.class);
     private final BasicDataSource pool = new BasicDataSource();
 
     private PsqlStore() {
@@ -28,12 +31,14 @@ public class PsqlStore implements Store {
         )) {
             cfg.load(io);
         } catch (Exception e) {
+            logger.info("Problems with reading properties file");
             throw new IllegalStateException(e);
         }
         try {
             Class.forName(cfg.getProperty("jdbc.driver"));
         } catch (Exception e) {
-            logger.info("Error");
+            logger.info("Problems with downloading jdbc driver");
+            throw new IllegalStateException(e);
         }
         pool.setDriverClassName(cfg.getProperty("jdbc.driver"));
         pool.setUrl(cfg.getProperty("jdbc.url"));
@@ -56,15 +61,14 @@ public class PsqlStore implements Store {
     public Collection<Post> findAllPosts() {
         List<Post> posts = new ArrayList<>();
         try (Connection cn = pool.getConnection();
-             PreparedStatement ps = cn.prepareStatement("SELECT * FROM post")
-        ) {
+             PreparedStatement ps = cn.prepareStatement("SELECT * FROM post")) {
             try (ResultSet it = ps.executeQuery()) {
                 while (it.next()) {
                     posts.add(new Post(it.getInt("id"), it.getString("name")));
                 }
             }
         } catch (Exception e) {
-            logger.info("Error");
+            logger.info("Problems with finding all posts", e);
         }
         return posts;
     }
@@ -81,6 +85,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (SQLException throwables) {
+            logger.info("Problems with finding all candidates");
             throwables.printStackTrace();
         }
         return candidates;
@@ -98,6 +103,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (SQLException throwables) {
+            logger.info("Problems with finding all photo");
             throwables.printStackTrace();
         }
         return photo;
@@ -126,7 +132,7 @@ public class PsqlStore implements Store {
         if (photo.getId() == 0) {
             create(photo);
         } else {
-           update(photo);
+            update(photo);
         }
     }
 
@@ -142,8 +148,8 @@ public class PsqlStore implements Store {
                 }
             }
 
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (Exception e) {
+            logger.info("Problems with create photo", e);
         }
     }
 
@@ -160,7 +166,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-            logger.info("Error");
+            logger.info("Problems with create post", e);
         }
         return post;
     }
@@ -170,7 +176,7 @@ public class PsqlStore implements Store {
              PreparedStatement ps = cn.prepareStatement("INSERT INTO candidate(name , photoid) VALUES (?, ?) ", PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
             ps.setString(1, candidate.getName());
-           ps.setString(2, candidate.getPhotoId());
+            ps.setString(2, candidate.getPhotoId());
             ps.execute();
             try (ResultSet id = ps.getGeneratedKeys()) {
                 if (id.next()) {
@@ -178,7 +184,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (Exception e) {
-          e.printStackTrace();
+            e.printStackTrace();
         }
         return candidate;
     }
@@ -191,7 +197,7 @@ public class PsqlStore implements Store {
             ps.setInt(2, post.getId());
             ps.execute();
         } catch (Exception e) {
-            logger.info("Error");
+            logger.info("Problems with update post", e);
         }
     }
 
@@ -215,7 +221,7 @@ public class PsqlStore implements Store {
             ps.setInt(2, photo.getId());
             ps.execute();
         } catch (Exception e) {
-            logger.info("Error");
+            logger.info("Problems with update post", e);
         }
     }
 
@@ -234,6 +240,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (SQLException throwables) {
+            logger.info("Problems with findByIdPost post");
             throwables.printStackTrace();
         }
         return post;
@@ -252,14 +259,15 @@ public class PsqlStore implements Store {
                 try (ResultSet itPhoto = psPhoto.executeQuery()) {
                     if (itPhoto.next()) {
                         if (it.next()) {
-                            String name = it.getString(2);
-                            String photo = itPhoto.getString(1);
+                            String name = it.getString(1);
+                            String photo = itPhoto.getString(2);
                             candidate = new Candidate(id, name, photo);
                         }
                     }
                 }
             }
         } catch (SQLException throwables) {
+            logger.info("Problems with findByIdCandidate candidate");
             throwables.printStackTrace();
         }
         return candidate;
@@ -279,6 +287,7 @@ public class PsqlStore implements Store {
                 }
             }
         } catch (SQLException throwables) {
+            logger.info("Problems with findByIdPhoto photo");
             throwables.printStackTrace();
         }
         return photo;

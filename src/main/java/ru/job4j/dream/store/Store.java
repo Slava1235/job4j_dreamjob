@@ -25,12 +25,9 @@ public interface Store {
 
     void save(Candidate candidate);
 
-
     Post findByIdPost(int id);
 
     Candidate findByIdCandidate(int id);
 
     Photo findByIdPhoto(int id);
-
-
 }

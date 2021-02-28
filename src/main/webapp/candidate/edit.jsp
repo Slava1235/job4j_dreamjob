@@ -1,9 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%--<%@ page import="ru.job4j.dream.store.MemStore" %>--%>
-<%--<%@ page import="ru.job4j.dream.model.Post" %>--%>
 <%@ page import="ru.job4j.dream.model.Candidate" %>
 <%@ page import="ru.job4j.dream.store.PsqlStore" %>
-<%@ page import="ru.job4j.dream.model.Photo" %>
 <!doctype html>
 <html lang="en">
 <head>
@@ -46,18 +43,12 @@
             </div>
             <div class="card-body">
                 <form action="<%=request.getContextPath()%>/candidates.do?id=<%=candidate.getId()%>" method="post">
-                    <form action="<c:url value='/upload'/>" method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label>Имя</label>
-                            <input type="text" class="form-control" name="name" value="<%=candidate.getName()%>">
-
-                            <div class="checkbox">
-                                <input type="file" name="file">
-                            </div>
-<%--                            <button type="submit" class="btn btn-default">Submit</button>--%>
-                            <button type="submit" class="btn btn-primary">Сохранить</button>
-                    </form>
-
+                    <div class="form-group">
+                        <label>Имя</label>
+                        <input type="text" class="form-control" name="name" value="<%=candidate.getName()%>">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </form>
                 </form>
             </div>
         </div>

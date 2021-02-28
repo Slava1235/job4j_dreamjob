@@ -1,8 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%--<%@ page import="ru.job4j.dream.store.MemStore" %>--%>
-<%--<%@ page import="ru.job4j.dream.model.Post" %>--%>
-<%--<%@ page import="java.util.Collection" %>--%>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -12,8 +10,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
-          crossorigin="anonymous">
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
             integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
             crossorigin="anonymous"></script>
@@ -24,14 +21,11 @@
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
 
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Работа мечты</title>
 </head>
 <body>
 <div class="container pt-3">
-
     <div class="row">
         <ul class="nav">
             <li class="nav-item">
@@ -47,36 +41,35 @@
                 <a class="nav-link" href="<%=request.getContextPath()%>/candidate/edit.jsp">Добавить кандидата</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp"> <c:out value="${user.name}"/> |
-                    Выйти</a>
+                <a class="nav-link" href="<%=request.getContextPath()%>/login.jsp"> <c:out value="${user.name}"/> | Выйти</a>
             </li>
         </ul>
     </div>
     <div class="card" style="width: 100%">
-        <div class="card-body">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Названия</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach items="${posts}" var="post">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
                     <tr>
-                        <td>
-                            <a href='<c:url value="/post/edit.jsp?id=${post.id}"/>'>
-                                <i class="fa fa-edit mr-3"></i>
-                            </a>
-                            <c:out value="${post.name}"/>
-                        </td>
+                        <th scope="col">Названия</th>
                     </tr>
-                </c:forEach>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    <c:forEach items ="${candidates}" var="candidate">
+                        <tr>
+                            <td>
+                                <a href='<c:url value="/candidate/edit.jsp?id=${candidate.id}"/>'>
+                                    <i class ="fa fa-edit mr-3"></i>
+                                </a>
+                                <c:out value="${candidate.name}"/>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
         </div>
+</div>
     </div>
-</div>
-</div>
 </div>
 </body>
 </html>

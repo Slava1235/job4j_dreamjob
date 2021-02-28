@@ -13,6 +13,7 @@ public class Candidate {
         this.photoId = photoId;
     }
 
+
     public String getPhotoId() {
         return photoId;
     }
